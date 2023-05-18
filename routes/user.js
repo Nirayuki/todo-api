@@ -53,7 +53,7 @@ router.post('/login', (req, res, next) => {
                     bcrypt.compare(senha, resultado[0].senha, (error, response) => {
                         if (response) {
                             res.status(201).send({
-                                iuser: resultado[0].iduser,
+                                iduser: resultado[0].iduser,
                                 nome: resultado[0].nome,
                                 email: resultado[0].email
                             });
