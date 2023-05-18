@@ -5,8 +5,32 @@ const bcrypt = require('bcrypt');
 require('dotenv').config();
 const saltRounds = 10;
 
+router.post('/', (req, res, next) => {
 
-router.get('/', (req, res, next) => {
+    const iduser = req.body.iduser;
+
+    mysql.getConnection((error, conn) => {
+        conn.query(
+            'SELECT iduser, nome, email FROM user WHERE iduser = ?',
+            iduser,
+            (erorr, resultado, field) => {
+                conn.release();
+
+                if(error){
+                    res.send({error: error});
+                }
+
+                if(resultado.length > 0){
+                   res.send(resultado);
+                }else{
+                    res.send("usuario não encontrado");
+                }
+            }
+        )
+    })
+});
+
+router.get('/teste', (req, res, next) => {
     res.send("acessou");
 });
 
@@ -26,10 +50,13 @@ router.post('/login', (req, res, next) => {
                 }
 
                 if(resultado.length > 0) {
-                    console.log(resultado[0]);
                     bcrypt.compare(senha, resultado[0].senha, (error, response) => {
                         if (response) {
-                            res.send("Entrou");
+                            res.status(201).send({
+                                iuser: resultado[0].iduser,
+                                nome: resultado[0].nome,
+                                email: resultado[0].email
+                            });
                         }else{
                             res.send("Não entrou");
                         }
