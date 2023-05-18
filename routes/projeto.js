@@ -53,4 +53,26 @@ router.post('/list', (req, res, next) => {
     })
 })
 
+router.post('/getone', (req, res, next) => {
+    const idprojeto = req.body.idprojeto;
+
+    mysql.getConnection((error, conn) => {
+        conn.query(
+            'SELECT * FROM projeto WHERE idprojeto = ?',
+            idprojeto,
+            (error, resultado, field) => {
+                conn.release();
+
+                if(error){
+                    res.status(500).send({
+                        error: error,
+                        response: null
+                    });
+                }
+                res.send(resultado[0]);
+            }
+        )
+    })
+})
+
 module.exports = router;
