@@ -104,10 +104,14 @@ router.post('/register', (req, res, next) => {
                                                 response: null
                                             });
                                         }
-
-                                        res.status(201).send({
-                                            mensagem: 'Registro feito com sucesso!'
-                                        });
+                                        if(resultado.length > 0){
+                                            res.send(resultado.insertId);
+                                        }else{
+                                            res.status(500).send({
+                                                error: error,
+                                                response: null
+                                            });
+                                        }
                                     }
                                 )
                             })
@@ -119,5 +123,33 @@ router.post('/register', (req, res, next) => {
             )
         })
 });
+
+
+router.post('/getuser', (req, res, next) => {
+    const iduser = req.body.iduser;
+
+    mysql.getConnection((error, conn) => {
+        conn.query(
+            'SELECT * FROM user WHERE iduser = ?',
+            iduser,
+            (error, resultado, field) => {
+                conn.release();
+                if(error){
+                    res.status(500).send({
+                        error: error,
+                        response: null
+                    });
+                }
+                
+                if(resultado.length === 0){
+                    res.send("Usuário não encontrado");
+                }else{
+                    res.send(resultado[0]);
+                }
+                
+            }
+        )
+    })
+})
 
 module.exports = router;

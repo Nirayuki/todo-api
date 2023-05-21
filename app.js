@@ -36,8 +36,10 @@ app.get('/', (req, res) => {
 
 const rotaUser = require('./routes/user');
 const rotaProjeto = require('./routes/projeto');
+const rotaTarefa = require('./routes/tarefa');
 
 app.use('/user', rotaUser);
 app.use('/projeto', rotaProjeto);
+app.use('/tarefa', rotaTarefa);
 
 module.exports = app;

@@ -102,8 +102,9 @@ router.post('/getonetarefa', (req, res, next) => {
                             nome: e.nome,
                             data: e.data,
                             status: e.status,
-                            observacao: e.observacao,
-                            projeto_idprojeto: e.projeto_idprojeto
+                            projeto_idprojeto: e.projeto_idprojeto,
+                            checklist_size: e.checklist_size,
+                            checklist_done: e.checklist_done
                         }]
                     }
 
@@ -113,8 +114,9 @@ router.post('/getonetarefa', (req, res, next) => {
                             nome: e.nome,
                             data: e.data,
                             status: e.status,
-                            observacao: e.observacao,
-                            projeto_idprojeto: e.projeto_idprojeto
+                            projeto_idprojeto: e.projeto_idprojeto,
+                            checklist_size: e.checklist_size,
+                            checklist_done: e.checklist_done
                         }]
                     }
 
@@ -124,8 +126,9 @@ router.post('/getonetarefa', (req, res, next) => {
                             nome: e.nome,
                             data: e.data,
                             status: e.status,
-                            observacao: e.observacao,
-                            projeto_idprojeto: e.projeto_idprojeto
+                            projeto_idprojeto: e.projeto_idprojeto,
+                            checklist_size: e.checklist_size,
+                            checklist_done: e.checklist_done
                         }]
                     }
                 })
@@ -143,11 +146,13 @@ router.post('/tarefa', (req, res, next) => {
     const date = req.body.date;
     const checklist = req.body.checklist;
     const status = req.body.status;
+    const checklist_size = req.body.checklist_size;
+    const checklist_done = req.body.checklist_done;
 
     mysql.getConnection((error, conn) => {
         conn.query(
-            'INSERT INTO tarefa (nome, status, data, projeto_idprojeto) VALUES (?, ?, ?, ?) ',
-            [nome, status, date, idprojeto],
+            'INSERT INTO tarefa (nome, status, data, projeto_idprojeto, checklist_size, checklist_done) VALUES (?, ?, ?, ?, ?, ?) ',
+            [nome, status, date, idprojeto, checklist_size, checklist_done],
             (error, resultado, field) => {
                 conn.release();
 
@@ -180,6 +185,76 @@ router.post('/tarefa', (req, res, next) => {
                 
                 res.send("Tarefa criado com sucesso!");
                        
+            }
+        )
+    })
+})
+
+router.post('/projetoChangeStatus', (req, res, next) => {
+    const idprojeto = req.body.idprojeto;
+    const status = req.body.status;
+
+    mysql.getConnection((error, conn) => {
+        conn.query(
+            'UPDATE projeto SET status = ? WHERE idprojeto = ?',
+            [status, idprojeto],
+            (error, resultado, field) => {
+                conn.release();
+
+                if(error){
+                    res.status(500).send({
+                        error: error,
+                        response: null
+                    });
+                }
+                res.send("Status Atualizado com sucesso!");
+            }
+        )
+    })
+})
+
+router.post('/delete', (req, res, next) => {
+    const idprojeto = req.body.idprojeto;
+
+    mysql.getConnection((error, conn) => {
+        conn.query(
+            'DELETE FROM observacao WHERE idprojeto = ?',
+            idprojeto,
+            (error, resultado, field) => {
+                conn.release();
+
+                if(error){
+                    res.status(500).send({
+                        error: error,
+                        response: null
+                    });
+                }
+                res.send("Deletado com sucesso!");
+            }
+        )
+    })
+})
+
+router.post('/update', (req, res, next) => {
+    const nome = req.body.nome;
+    const github = req.body.github;
+    const site = req.body.site;
+    const idprojeto = req.body.idprojeto;
+
+    mysql.getConnection((error, conn) => {
+        conn.query(
+            'UPDATE projeto SET nome = ?, github = ?, site = ? WHERE idprojeto = ?',
+            [nome, github, site, idprojeto],
+            (error, resultado, field) => {
+                conn.release();
+
+                if(error){
+                    res.status(500).send({
+                        error: error,
+                        response: null
+                    });
+                }
+                res.send("Deletado com sucesso!");
             }
         )
     })
