@@ -105,7 +105,7 @@ router.post('/register', (req, res, next) => {
                                             });
                                         }
                                         if(resultado.length > 0){
-                                            res.send(resultado.insertId);
+                                            res.send(resultado?.insertId);
                                         }else{
                                             res.status(500).send({
                                                 error: error,

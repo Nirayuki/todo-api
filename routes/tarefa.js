@@ -3,12 +3,32 @@ const router = express.Router();
 const mysql = require('../mysql').pool;
 require('dotenv').config();
 
+router.post('/delete', (req, res, next) => {
+    const idtarefa = req.body.idtarefa;
+
+    mysql.getConnection((error, conn) => {
+        conn.query(
+            'DELETE FROM tarefa WHERE idtarefa = ?',
+            idtarefa,
+            (error, resultado, field) => {
+                conn.release();
+
+                if(error){
+                    res.status(500).send({
+                        error: error,
+                        response: null
+                    });
+                }
+                res.send("Deletado com sucesso!");
+            }
+        )
+    })
+})
 
 router.post('/getTarefa', (req, res, next) => {
     const idtarefa = req.body.idtarefa;
     var tarefa;
-    var checklist;
-    var observacao;
+
     mysql.getConnection((error, conn) => {
         conn.query(
             'SELECT * FROM tarefa WHERE idtarefa = ?',
@@ -83,6 +103,29 @@ router.post('/tarefaChangeStatus', (req, res, next) => {
                     });
                 }
                 res.send("Status Atualizado com sucesso!");
+            }
+        )
+    })
+})
+
+router.post('/updateDate', (req, res, next) => {
+    const idtarefa = req.body.idtarefa;
+    const date = req.body.date;
+
+    mysql.getConnection((error, conn) => {
+        conn.query(
+            'UPDATE tarefa SET data = ? WHERE idtarefa = ?',
+            [date, idtarefa],
+            (error, resultado, field) => {
+                conn.release();
+
+                if(error){
+                    res.status(500).send({
+                        error: error,
+                        response: null
+                    });
+                }
+                res.send("Date Atualizado com sucesso!");
             }
         )
     })

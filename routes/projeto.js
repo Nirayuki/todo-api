@@ -33,6 +33,8 @@ router.post('/add', (req, res, next) => {
 router.post('/list', (req, res, next) => {
     const iduser = req.body.iduser;
 
+    var teste;
+
     mysql.getConnection((error, conn) => {
         conn.query(
             'SELECT * FROM projeto WHERE user_iduser = ?',
@@ -46,7 +48,6 @@ router.post('/list', (req, res, next) => {
                         response: null
                     });
                 }
-
                 res.send(resultado);
             }
         )
@@ -218,7 +219,7 @@ router.post('/delete', (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         conn.query(
-            'DELETE FROM observacao WHERE idprojeto = ?',
+            'DELETE FROM projeto WHERE idprojeto = ?',
             idprojeto,
             (error, resultado, field) => {
                 conn.release();
@@ -259,5 +260,6 @@ router.post('/update', (req, res, next) => {
         )
     })
 })
+
 
 module.exports = router;
