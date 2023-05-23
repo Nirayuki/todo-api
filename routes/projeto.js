@@ -33,11 +33,9 @@ router.post('/add', (req, res, next) => {
 router.post('/list', (req, res, next) => {
     const iduser = req.body.iduser;
 
-    var teste;
-
     mysql.getConnection((error, conn) => {
         conn.query(
-            'SELECT * FROM projeto WHERE user_iduser = ?',
+            "SELECT projeto.idprojeto as idprojeto, projeto.nome as nome, projeto.github as github, projeto.site as site, projeto.status as status, COUNT(tarefa.idtarefa) as total_tarefa, SUM(CASE WHEN tarefa.status = 'Concluido' THEN 1 ELSE 0 END) as total_tarefa_concluida FROM projeto LEFT JOIN tarefa ON projeto.idprojeto = tarefa.projeto_idprojeto WHERE projeto.user_iduser = ? group by idprojeto",
             iduser,
             (error, resultado, field) => {
                 conn.release();

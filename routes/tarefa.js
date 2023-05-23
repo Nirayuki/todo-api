@@ -131,6 +131,29 @@ router.post('/updateDate', (req, res, next) => {
     })
 })
 
+router.post('/updateNome', (req, res, next) => {
+    const idtarefa = req.body.idtarefa;
+    const nome = req.body.nome;
+
+    mysql.getConnection((error, conn) => {
+        conn.query(
+            'UPDATE tarefa SET nome = ? WHERE idtarefa = ?',
+            [nome, idtarefa],
+            (error, resultado, field) => {
+                conn.release();
+
+                if(error){
+                    res.status(500).send({
+                        error: error,
+                        response: null
+                    });
+                }
+                res.send("Date Atualizado com sucesso!");
+            }
+        )
+    })
+})
+
 
 router.post('/updateCheckStatus', (req, res, next) => {
     const status = req.body.status;

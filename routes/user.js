@@ -72,6 +72,7 @@ router.post('/register', (req, res, next) => {
     const email = req.body.email;
     const senha = req.body.senha;
 
+    var id;
 
     mysql.getConnection((error, conn) => {
             conn.query(
@@ -95,23 +96,39 @@ router.post('/register', (req, res, next) => {
                                 conn.query(
                                     'INSERT INTO user (nome, email, senha) VALUES (?, ?, ?)',
                                     [nome, email, hash],
-                                    (error, resultado, field) => {
+                                    (error, result, field) => {
                                         conn.release();
 
                                         if(error){
-                                            res.status(500).send({
+                                            res.sendStatus(500).send({
                                                 error: error,
                                                 response: null
                                             });
                                         }
-                                        if(resultado.length > 0){
-                                            res.send(resultado?.insertId);
-                                        }else{
-                                            res.status(500).send({
-                                                error: error,
-                                                response: null
-                                            });
+                                        
+                                        
+                                        if(result){
+                                            id = result.insertId;
+                                            mysql.getConnection((error, conn) => {
+                                                conn.query(
+                                                    'SELECT iduser FROM user WHERE iduser = ?',
+                                                    id,
+                                                    (error, resu, field) => {
+                                                        conn.release();
+
+                                                        if(error){
+                                                            res.sendStatus(500).send({
+                                                                error: error,
+                                                                response: null
+                                                            });
+                                                        }
+
+                                                        res.send(resu);
+                                                    }
+                                                )
+                                            })
                                         }
+                                      
                                     }
                                 )
                             })
