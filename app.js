@@ -10,7 +10,6 @@ const corsOptions ={
    optionSuccessStatus:200,
 }
 
-
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(bodyParser.json());
 
@@ -29,6 +28,7 @@ app.use((req, res, next) => {
     }
     next();
 });
+
 
 app.get('/', (req, res) => {
     res.send("Caminho encontrado");

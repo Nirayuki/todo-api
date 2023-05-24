@@ -3,7 +3,6 @@ const router = express.Router();
 const mysql = require('../mysql').pool;
 require('dotenv').config();
 
-
 router.post('/add', (req, res, next) => {
     const nome = req.body.nome;
     const iduser = req.body.iduser;
@@ -15,7 +14,7 @@ router.post('/add', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
@@ -40,7 +39,7 @@ router.post('/list', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
@@ -62,7 +61,7 @@ router.post('/getone', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
@@ -74,8 +73,8 @@ router.post('/getone', (req, res, next) => {
     })
 })
 
-router.post('/getonetarefa', (req, res, next) => {
-    const idprojeto = req.body.idprojeto;
+router.post('/listTarefa/:idprojeto', (req, res, next) => {
+    const idprojeto = req.params.idprojeto;
     let andamento = [];
     let tarefa = [];
     let concluido = [];
@@ -87,52 +86,54 @@ router.post('/getonetarefa', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
                     });
                 }
 
-                resultado.map((e) =>{
-                    if(e.status === "Em andamento"){
-                        andamento = [...andamento, {
+                resultado.forEach((e) => {
+                    if (e.status === 'Em andamento') {
+                        andamento.push({
                             idtarefa: e.idtarefa,
                             nome: e.nome,
                             data: e.data,
                             status: e.status,
                             projeto_idprojeto: e.projeto_idprojeto,
                             checklist_size: e.checklist_size,
-                            checklist_done: e.checklist_done
-                        }]
-                    }
-
-                    if(e.status === "Tarefa"){
-                        tarefa = [...tarefa, {
+                            checklist_done: e.checklist_done,
+                        });
+                    } else if (e.status === 'Tarefa') {
+                        tarefa.push({
                             idtarefa: e.idtarefa,
                             nome: e.nome,
                             data: e.data,
                             status: e.status,
                             projeto_idprojeto: e.projeto_idprojeto,
                             checklist_size: e.checklist_size,
-                            checklist_done: e.checklist_done
-                        }]
-                    }
-
-                    if(e.status === "Concluido"){
-                        concluido = [...concluido, {
+                            checklist_done: e.checklist_done,
+                        });
+                    } else if (e.status === 'Concluido') {
+                        concluido.push({
                             idtarefa: e.idtarefa,
                             nome: e.nome,
                             data: e.data,
                             status: e.status,
                             projeto_idprojeto: e.projeto_idprojeto,
                             checklist_size: e.checklist_size,
-                            checklist_done: e.checklist_done
-                        }]
+                            checklist_done: e.checklist_done,
+                        });
                     }
-                })
+                });
 
-                res.send({tarefa: tarefa, andamento: andamento, concluido: concluido})
+                const responseData = {
+                    tarefa,
+                    andamento,
+                    concluido,
+                };
+
+                return res.status(200).json(responseData);
             }
         )
     })
@@ -155,7 +156,7 @@ router.post('/tarefa', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
@@ -171,7 +172,7 @@ router.post('/tarefa', (req, res, next) => {
                             (error, resultado, field) => {
                                 conn.release();
 
-                                if(error){
+                                if (error) {
                                     res.status(500).send({
                                         error: error,
                                         response: null
@@ -179,17 +180,16 @@ router.post('/tarefa', (req, res, next) => {
                                 }
                             }
                         )
-                    }) 
-                })   
-                
-                res.send("Tarefa criado com sucesso!");
-                       
+                    })
+                })
+                return res.status(201).json({ message: 'Tarefa adicionada com sucesso!' });
             }
         )
     })
 })
 
-router.post('/projetoChangeStatus', (req, res, next) => {
+router.post('/projetoChangeStatus/:iduser', (req, res, next) => {
+    const iduser = req.params.iduser;
     const idprojeto = req.body.idprojeto;
     const status = req.body.status;
 
@@ -200,7 +200,7 @@ router.post('/projetoChangeStatus', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
@@ -222,7 +222,7 @@ router.post('/delete', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
@@ -247,7 +247,7 @@ router.post('/update', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null

@@ -3,7 +3,8 @@ const router = express.Router();
 const mysql = require('../mysql').pool;
 require('dotenv').config();
 
-router.post('/delete', (req, res, next) => {
+router.post(`/delete/:idprojeto`, (req, res, next) => {
+    const idprojeto = req.params.idprojeto;
     const idtarefa = req.body.idtarefa;
 
     mysql.getConnection((error, conn) => {
@@ -13,7 +14,7 @@ router.post('/delete', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
@@ -25,8 +26,8 @@ router.post('/delete', (req, res, next) => {
     })
 })
 
-router.post('/getTarefa', (req, res, next) => {
-    const idtarefa = req.body.idtarefa;
+router.post('/getTarefa/:idtarefa', (req, res, next) => {
+    const idtarefa = req.params.idtarefa;
     var tarefa;
 
     mysql.getConnection((error, conn) => {
@@ -36,7 +37,7 @@ router.post('/getTarefa', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
@@ -52,27 +53,27 @@ router.post('/getTarefa', (req, res, next) => {
                         (error, resultadoCheck, field) => {
                             conn.release();
 
-                            if(error){
+                            if (error) {
                                 res.status(500).send({
                                     eror: error,
                                     response: null
                                 })
                             }
-                            
+
                             mysql.getConnection((error, conn) => {
                                 conn.query(
                                     'SELECT * FROM observacao WHERE tarefa_idtarefa = ?',
                                     idtarefa,
                                     (error, resultadoObs, field) => {
                                         conn.release();
-            
-                                        if(error){
+
+                                        if (error) {
                                             res.status(500).send({
                                                 error: error,
                                                 response: null
                                             })
                                         }
-                                        res.send({tarefa: resultado, checklist: resultadoCheck, observacao: resultadoObs});
+                                        res.send({ tarefa: resultado, checklist: resultadoCheck, observacao: resultadoObs });
                                     }
                                 )
                             })
@@ -96,21 +97,23 @@ router.post('/tarefaChangeStatus', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
                     });
                 }
+
                 res.send("Status Atualizado com sucesso!");
             }
         )
     })
 })
 
-router.post('/updateDate', (req, res, next) => {
-    const idtarefa = req.body.idtarefa;
+router.post('/updateDate/:idtarefa', (req, res, next) => {
+    const idtarefa = req.params.idtarefa;
     const date = req.body.date;
+    const idprojeto = req.body.idprojeto;
 
     mysql.getConnection((error, conn) => {
         conn.query(
@@ -119,7 +122,7 @@ router.post('/updateDate', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
@@ -131,9 +134,10 @@ router.post('/updateDate', (req, res, next) => {
     })
 })
 
-router.post('/updateNome', (req, res, next) => {
-    const idtarefa = req.body.idtarefa;
+router.post('/updateNome/:idtarefa', (req, res, next) => {
+    const idtarefa = req.params.idtarefa;
     const nome = req.body.nome;
+    const idprojeto = req.body.idprojeto;
 
     mysql.getConnection((error, conn) => {
         conn.query(
@@ -142,7 +146,7 @@ router.post('/updateNome', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
@@ -155,12 +159,12 @@ router.post('/updateNome', (req, res, next) => {
 })
 
 
-router.post('/updateCheckStatus', (req, res, next) => {
+router.post('/updateCheckStatus/:idtarefa', (req, res, next) => {
     const status = req.body.status;
     const idchecklist = req.body.idchecklist;
     const checklist_size = req.body.checklist_size;
     const checklist_done = req.body.checklist_done;
-    const idtarefa = req.body.idtarefa;
+    const idtarefa = req.params.idtarefa;
 
     mysql.getConnection((error, conn) => {
         conn.query(
@@ -169,13 +173,13 @@ router.post('/updateCheckStatus', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
                     });
                 }
-                if(status === false){
+                if (status === false) {
                     const updateCheck = checklist_done - 1;
                     mysql.getConnection((error, conn) => {
                         conn.query(
@@ -184,19 +188,18 @@ router.post('/updateCheckStatus', (req, res, next) => {
                             (error, resultado, field) => {
                                 conn.release();
 
-                                if(error){
+                                if (error) {
                                     res.status(500).send({
                                         error: error,
                                         response: null
                                     });
                                 }
-
                                 res.send("Status Atualizado com sucesso!");
                             }
                         )
                     })
-                    
-                }else{
+
+                } else {
                     const updateCheck = checklist_done + 1;
                     mysql.getConnection((error, conn) => {
                         conn.query(
@@ -205,13 +208,12 @@ router.post('/updateCheckStatus', (req, res, next) => {
                             (error, resultado, field) => {
                                 conn.release();
 
-                                if(error){
+                                if (error) {
                                     res.status(500).send({
                                         error: error,
                                         response: null
                                     });
                                 }
-
                                 res.send("Status Atualizado com sucesso!");
                             }
                         )
@@ -222,7 +224,8 @@ router.post('/updateCheckStatus', (req, res, next) => {
     })
 })
 
-router.post('/updateCheckNome', (req, res, next) => {
+router.post('/updateCheckNome/:idtarefa', (req, res, next) => {
+    const idtarefa = req.params.idtarefa;
     const idchecklist = req.body.idchecklist;
     const nome = req.body.nome;
 
@@ -233,7 +236,7 @@ router.post('/updateCheckNome', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
@@ -245,9 +248,9 @@ router.post('/updateCheckNome', (req, res, next) => {
     })
 })
 
-router.post('/deleteCheck', (req, res, next) => {
+router.post('/deleteCheck/:idtarefa', (req, res, next) => {
     const idchecklist = req.body.idchecklist;
-    const idtarefa = req.body.idtarefa;
+    const idtarefa = req.params.idtarefa;
     const checklist_size = req.body.checklist_size;
 
     mysql.getConnection((error, conn) => {
@@ -257,7 +260,7 @@ router.post('/deleteCheck', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
@@ -270,14 +273,13 @@ router.post('/deleteCheck', (req, res, next) => {
                         [checklist_size - 1, idtarefa],
                         (error, result, field) => {
                             conn.release();
-                            
-                            if(error){
+
+                            if (error) {
                                 res.status(500).send({
                                     error: error,
                                     response: null
                                 });
                             }
-
                             res.send("Deletado com sucesso");
                         }
                     )
@@ -287,9 +289,9 @@ router.post('/deleteCheck', (req, res, next) => {
     })
 })
 
-router.post('/addObservacao', (req, res, next) => {
+router.post('/addObservacao/:idtarefa', (req, res, next) => {
     const observacao = req.body.observacao;
-    const idtarefa = req.body.idtarefa;
+    const idtarefa = req.params.idtarefa;
 
     mysql.getConnection((error, conn) => {
         conn.query(
@@ -298,15 +300,14 @@ router.post('/addObservacao', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
                     });
                 }
-                
                 res.send("Observação adicionada com sucesso!");
-               
+
             }
         )
     })
@@ -322,15 +323,14 @@ router.post('/deleteObservacao', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
                     });
                 }
-                
                 res.send("Observação deletada com sucesso");
-               
+
             }
         )
     })
@@ -347,15 +347,14 @@ router.post('/updateObservacao', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
                     });
                 }
-                
                 res.send("Observação editada com sucesso");
-               
+
             }
         )
     })
@@ -374,13 +373,13 @@ router.post('/addCheck', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if(error){
+                if (error) {
                     res.status(500).send({
                         error: error,
                         response: null
                     });
                 }
-                
+
                 mysql.getConnection((error, conn) => {
                     conn.query(
                         'UPDATE tarefa SET checklist_size = ? WHERE idtarefa = ?',
@@ -388,18 +387,17 @@ router.post('/addCheck', (req, res, next) => {
                         (error, result, field) => {
                             conn.release();
 
-                            if(error){
+                            if (error) {
                                 res.status(500).send({
                                     error: error,
                                     response: null
                                 });
                             }
-
                             res.send("Check adicionado com sucesso");
                         }
                     )
                 })
-               
+
             }
         )
     })
