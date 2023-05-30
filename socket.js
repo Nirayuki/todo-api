@@ -5,7 +5,7 @@ let io; // Variável para armazenar a instância do Socket.IO
 function createSocketServer(server) {
   io = new Server(server, {
     cors: {
-        origin: 'https://nexboard.vercel.app', // Atualize com a origem permitida do seu front-end
+        origin: 'https://nexboard.netlify.app', // Atualize com a origem permitida do seu front-end
         methods: ['GET', 'POST'],
       },
   });

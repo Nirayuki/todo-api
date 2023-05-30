@@ -34,14 +34,13 @@ router.post('/', (req, res, next) => {
 });
 
 router.get('/teste', (req, res, next) => {
-    const io = getSocketIOInstance();
-    io.emit("teste", "teste");
-    res.send("acessou");
+     res.send("acessou");
 });
 
 router.post('/login', (req, res, next) => {
     const email = req.body.email;
     const senha = req.body.senha;
+	console.log(email, senha);
 
     mysql.getConnection((error, conn) => {
         conn.query(
@@ -53,6 +52,8 @@ router.post('/login', (req, res, next) => {
                 if (error) {
                     res.send({ error: error });
                 }
+
+		
 
                 if (resultado.length > 0) {
                     bcrypt.compare(senha, resultado[0].senha, (error, response) => {

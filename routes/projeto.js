@@ -14,16 +14,13 @@ router.post('/add', (req, res, next) => {
             (error, resultado, field) => {
                 conn.release();
 
-                if (error) {
-                    res.status(500).send({
-                        error: error,
-                        response: null
-                    });
-                }
+                if (resultado) {
+                    res.status(201).json({ message: 'Tarefa adicionada com sucesso!' });
+                }else{
+			res.status(500).send(error);
+		}
 
-                res.status(201).send({
-                    mensagem: 'Projeto registrado com sucesso!'
-                });
+                
             }
         )
     })
@@ -44,8 +41,10 @@ router.post('/list', (req, res, next) => {
                         error: error,
                         response: null
                     });
-                }
-                res.send(resultado);
+                }else{
+			res.send(resultado);
+		}
+                
             }
         )
     })

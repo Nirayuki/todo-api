@@ -1,12 +1,26 @@
 require('dotenv').config();
 const http = require('http');
+const https = require('https');
 const app = require('./app');
 const port = process.env.PORT || 3001;
 const server = http.createServer(app);
-const { createSocketServer } = require('./socket');
-const io = createSocketServer(server);
-const mysql = require('./mysql').pool;
 
+const { createSocketServer } = require('./socket');
+
+const mysql = require('./mysql').pool;
+const fs = require('fs');
+
+const key = fs.readFileSync('private.key');
+const cert = fs.readFileSync('certificate.crt');
+
+
+const cred = {
+	key,
+	cert
+}
+
+const httpsServer = https.createServer(cred, app);
+const io = createSocketServer(httpsServer);
 
 io.on('connection', (socket) => {
   socket.on('att-list-tarefa', (data) => {
@@ -171,13 +185,13 @@ io.on('connection', (socket) => {
 
   // Evento quando o cliente desconectar
   socket.on('disconnect', () => {
-    console.log(`User disconnected: ${socket.id}`);
-
     // Lógica de desconexão do WebSocket...
   });
 });
 // Importar e configurar o módulo socket.io
 
 
+
 server.listen(port);
 
+httpsServer.listen(8443);
