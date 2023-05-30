@@ -10,17 +10,17 @@ const { createSocketServer } = require('./socket');
 const mysql = require('./mysql').pool;
 const fs = require('fs');
 
-const key = fs.readFileSync('private.key');
-const cert = fs.readFileSync('certificate.crt');
+// const key = fs.readFileSync('private.key');
+// const cert = fs.readFileSync('certificate.crt');
 
 
-const cred = {
-	key,
-	cert
-}
+// const cred = {
+// 	key,
+// 	cert
+// }
 
-const httpsServer = https.createServer(cred, app);
-const io = createSocketServer(httpsServer);
+// const httpsServer = https.createServer(cred, app);
+const io = createSocketServer(server);
 
 io.on('connection', (socket) => {
   socket.on('att-list-tarefa', (data) => {
@@ -194,4 +194,4 @@ io.on('connection', (socket) => {
 
 server.listen(port);
 
-httpsServer.listen(8443);
+// httpsServer.listen(8443);
