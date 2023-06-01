@@ -167,8 +167,8 @@ router.post('/tarefa', (req, res, next) => {
     try {
         let idTarefa;
         const { idprojeto, nome, date, checklist, status, checklist_size, checklist_done } = req.body;
-
-        if (!nome || !date || !checklist || !status || !checklist_size) {
+        
+        if (!nome || !date ) {
             return res.status(401).json("Por favor, preencher os campos abaixo!");
         }
 
